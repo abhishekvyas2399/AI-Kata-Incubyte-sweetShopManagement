@@ -1,5 +1,5 @@
 {
-  "include" : ["src/**/*.ts"],
+  "include" : ["src/**/*.ts", "tests/**/*.ts"],
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
@@ -14,6 +14,7 @@
     "esModuleInterop": true,
     "verbatimModuleSyntax": false,
     "allowSyntheticDefaultImports": true,
+    "types": ["jest", "node"],
 
 
     "typeRoots": ["./node_modules/@types", "./src/types"],
