@@ -1,7 +1,5 @@
-import  dotenv from "dotenv"
+import "./env"
 import app from "./app"
-
-dotenv.config()
 
 // used injected envirnment variable port and listen to user request on that port
 app.listen(process.env.PORT,()=>{

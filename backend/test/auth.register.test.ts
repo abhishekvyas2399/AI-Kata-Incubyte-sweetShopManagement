@@ -3,7 +3,7 @@ import app from "../src/app";
 import { PrismaClient } from "@prisma/client";
 import { describe, it, expect ,beforeAll ,afterAll } from '@jest/globals';
 
-const prisma=new PrismaClient();
+let prisma:PrismaClient;
 
 describe("user registration api", () => {
   const userData = {
@@ -16,6 +16,7 @@ describe("user registration api", () => {
 
   // clean db before tests
   beforeAll(async () => {
+    prisma=new PrismaClient();
     await prisma.purchase.deleteMany();
     await prisma.restockLog.deleteMany();
     await prisma.sweet.deleteMany();
