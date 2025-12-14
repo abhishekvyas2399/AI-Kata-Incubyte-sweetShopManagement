@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import AppRoutes from "./routes/AppRoute";
+import type { ReduxDispatchType, ReduxStoreType } from "./redux/store";
+import { verifyUser } from "./redux/slice/userDataSlice";
+import LoadingAnimation from "./component/LoadingAnimation";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const dispatch=useDispatch<ReduxDispatchType>();
+  const token=useSelector((state:ReduxStoreType)=>state.userData.userInfo.token);
+  const error=useSelector((state:ReduxStoreType)=>state.userData.error);
+  const navigate=useNavigate();
+  const location=useLocation();
+  const [loading,setLoading]=useState(true);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  const initialVerify=useCallback(()=>{
+    const authorization=localStorage.getItem('authorization') as string;
+    if(!authorization){
+       if(location.pathname==='/login' || location.pathname==='/register'){
+        setLoading(false);
+        return;
+       }else{
+        setLoading(false);
+        navigate('/login');
+        return;
+       }
+    }
+    dispatch(verifyUser(authorization));
+  },[localStorage,navigate,dispatch,verifyUser])
+
+  useEffect(()=>{
+    initialVerify();
+  },[initialVerify])
+
+  useEffect(()=>{
+    if(token)
+      setLoading(false);
+  },[token])
+
+  useEffect(()=>{
+    if(error){
+      localStorage.removeItem('authorization');
+       if(location.pathname==='/login' || location.pathname==='/register'){
+        setLoading(false);
+        return;
+       }else{
+        setLoading(false);
+        navigate('/login');
+        return;
+       }
+    }
+  },[error])
+
+  if(loading)  <LoadingAnimation/>;
+  return  <AppRoutes/>
 }
 
 export default App
